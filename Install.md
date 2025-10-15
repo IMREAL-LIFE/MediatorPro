@@ -207,8 +207,8 @@ sudo -u mediator npm run db:push
 
 ### 5.6 Set Permissions
 ```bash
-sudo chown -R mediator:mediator /home/mediator/mediator-pro
-sudo chmod -R 755 /home/mediator/mediator-pro
+sudo chown -R mediator:mediator /home/mediator/MediatorPro
+sudo chmod -R 755 /home/mediator/MediatorPro
 ```
 
 ---
