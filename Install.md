@@ -148,7 +148,7 @@ sudo systemctl restart postgresql
 ### 5.1 Clone Repository
 ```bash
 cd /home/mediator
-sudo -u mediator git clone https://github.com/yourusername/mediator-pro.git
+sudo -u mediator git clone https://github.com/IMREAL-LIFE/MediatorPro.git
 cd mediator-pro
 ```
 
