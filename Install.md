@@ -149,7 +149,7 @@ sudo systemctl restart postgresql
 ```bash
 cd /home/mediator
 sudo -u mediator git clone https://github.com/IMREAL-LIFE/MediatorPro.git
-cd mediator-pro
+cd MediatorPro
 ```
 
 ### 5.2 Install Application Dependencies
@@ -189,7 +189,7 @@ OPENAI_API_KEY=sk-your-openai-api-key
 DEFAULT_OBJECT_STORAGE_BUCKET_ID=your-gcs-bucket-id
 PUBLIC_OBJECT_SEARCH_PATHS=public
 PRIVATE_OBJECT_DIR=.private
-GOOGLE_APPLICATION_CREDENTIALS=/home/mediator/mediator-pro/gcs-credentials.json
+GOOGLE_APPLICATION_CREDENTIALS=/home/mediator/MediatorPro/gcs-credentials.json
 
 # Zoom (Optional - configure via Settings UI)
 ZOOM_ACCOUNT_ID=
@@ -217,7 +217,7 @@ sudo chmod -R 755 /home/mediator/MediatorPro
 
 ### 6.1 Create Apache Virtual Host
 ```bash
-sudo nano /etc/apache2/sites-available/mediator-pro.conf
+sudo nano /etc/apache2/sites-available/MediatorPro.conf
 ```
 
 Add configuration:
@@ -263,14 +263,14 @@ Add configuration:
     RewriteRule /(.*)           http://localhost:5000/$1 [P,L]
 
     # Logging
-    ErrorLog ${APACHE_LOG_DIR}/mediator-pro-error.log
-    CustomLog ${APACHE_LOG_DIR}/mediator-pro-access.log combined
+    ErrorLog ${APACHE_LOG_DIR}/MediatorPro-error.log
+    CustomLog ${APACHE_LOG_DIR}/MediatorPro-access.log combined
 </VirtualHost>
 ```
 
 ### 6.2 Enable Site and Restart Apache
 ```bash
-sudo a2ensite mediator-pro.conf
+sudo a2ensite MediatorPro.conf
 sudo apache2ctl configtest
 sudo systemctl restart apache2
 ```
@@ -318,7 +318,7 @@ exec -l $SHELL
 gcloud init
 
 # Create bucket
-gsutil mb -p your-project-id -c STANDARD -l us-central1 gs://mediator-pro-storage
+gsutil mb -p your-project-id -c STANDARD -l us-central1 gs://MediatorPro-storage
 
 # Set CORS configuration
 cat > cors.json << EOF
@@ -332,26 +332,26 @@ cat > cors.json << EOF
 ]
 EOF
 
-gsutil cors set cors.json gs://mediator-pro-storage
+gsutil cors set cors.json gs://MediatorPro-storage
 ```
 
 #### Create Service Account
 ```bash
 # Create service account
-gcloud iam service-accounts create mediator-pro-storage \
+gcloud iam service-accounts create MediatorPro-storage \
     --display-name="Mediator Pro Storage"
 
 # Grant permissions
 gcloud projects add-iam-policy-binding your-project-id \
-    --member="serviceAccount:mediator-pro-storage@your-project-id.iam.gserviceaccount.com" \
+    --member="serviceAccount:MediatorPro-storage@your-project-id.iam.gserviceaccount.com" \
     --role="roles/storage.objectAdmin"
 
 # Create key file
-gcloud iam service-accounts keys create /home/mediator/mediator-pro/gcs-credentials.json \
-    --iam-account=mediator-pro-storage@your-project-id.iam.gserviceaccount.com
+gcloud iam service-accounts keys create /home/mediator/MediatorPro/gcs-credentials.json \
+    --iam-account=MediatorPro-storage@your-project-id.iam.gserviceaccount.com
 
-sudo chown mediator:mediator /home/mediator/mediator-pro/gcs-credentials.json
-sudo chmod 600 /home/mediator/mediator-pro/gcs-credentials.json
+sudo chown mediator:mediator /home/mediator/MediatorPro/gcs-credentials.json
+sudo chmod 600 /home/mediator/MediatorPro/gcs-credentials.json
 ```
 
 ### 8.2 Google Calendar OAuth Setup
@@ -389,16 +389,16 @@ sudo chmod 600 /home/mediator/mediator-pro/gcs-credentials.json
 
 ### 9.1 Create PM2 Ecosystem File
 ```bash
-sudo -u mediator nano /home/mediator/mediator-pro/ecosystem.config.js
+sudo -u mediator nano /home/mediator/MediatorPro/ecosystem.config.js
 ```
 
 Add:
 ```javascript
 module.exports = {
   apps: [{
-    name: 'mediator-pro',
+    name: 'MediatorPro',
     script: './server/index.js',
-    cwd: '/home/mediator/mediator-pro',
+    cwd: '/home/mediator/MediatorPro',
     instances: 2,
     exec_mode: 'cluster',
     autorestart: true,
@@ -418,7 +418,7 @@ module.exports = {
 
 ### 9.2 Start Application with PM2
 ```bash
-cd /home/mediator/mediator-pro
+cd /home/mediator/MediatorPro
 sudo -u mediator mkdir -p logs
 sudo -u mediator pm2 start ecosystem.config.js
 sudo -u mediator pm2 save
@@ -436,13 +436,13 @@ sudo systemctl enable pm2-mediator
 sudo -u mediator pm2 status
 
 # Logs
-sudo -u mediator pm2 logs mediator-pro
+sudo -u mediator pm2 logs MediatorPro
 
 # Restart
-sudo -u mediator pm2 restart mediator-pro
+sudo -u mediator pm2 restart MediatorPro
 
 # Stop
-sudo -u mediator pm2 stop mediator-pro
+sudo -u mediator pm2 stop MediatorPro
 
 # Monitor
 sudo -u mediator pm2 monit
@@ -458,11 +458,11 @@ sudo -u mediator pm2 monit
 sudo -u mediator pm2 logs --lines 100
 
 # Apache logs
-sudo tail -f /var/log/apache2/mediator-pro-access.log
-sudo tail -f /var/log/apache2/mediator-pro-error.log
+sudo tail -f /var/log/apache2/MediatorPro-access.log
+sudo tail -f /var/log/apache2/MediatorPro-error.log
 
 # Application logs
-tail -f /home/mediator/mediator-pro/logs/combined.log
+tail -f /home/mediator/MediatorPro/logs/combined.log
 ```
 
 ### 10.2 Database Backup Script
@@ -521,7 +521,7 @@ sudo systemctl status postgresql
 ### 10.5 Update Application
 ```bash
 # Navigate to application directory
-cd /home/mediator/mediator-pro
+cd /home/mediator/MediatorPro
 
 # Pull latest changes
 sudo -u mediator git pull origin main
@@ -536,7 +536,7 @@ sudo -u mediator npm run build
 sudo -u mediator npm run db:push
 
 # Restart application
-sudo -u mediator pm2 restart mediator-pro
+sudo -u mediator pm2 restart MediatorPro
 ```
 
 ---
@@ -546,7 +546,7 @@ sudo -u mediator pm2 restart mediator-pro
 ### Application Won't Start
 ```bash
 # Check PM2 logs
-sudo -u mediator pm2 logs mediator-pro --lines 100
+sudo -u mediator pm2 logs MediatorPro --lines 100
 
 # Check Node.js version
 node --version
@@ -594,11 +594,11 @@ sudo systemctl status certbot.timer
 ### Permission Issues
 ```bash
 # Fix application permissions
-sudo chown -R mediator:mediator /home/mediator/mediator-pro
-sudo chmod -R 755 /home/mediator/mediator-pro
+sudo chown -R mediator:mediator /home/mediator/MediatorPro
+sudo chmod -R 755 /home/mediator/MediatorPro
 
 # Fix log permissions
-sudo chmod -R 755 /home/mediator/mediator-pro/logs
+sudo chmod -R 755 /home/mediator/MediatorPro/logs
 ```
 
 ---
@@ -658,9 +658,9 @@ node_args: '--max-old-space-size=2048'
 ## 📞 Support
 
 For issues during installation:
-- Check logs: `/home/mediator/mediator-pro/logs/`
+- Check logs: `/home/mediator/MediatorPro/logs/`
 - Review documentation: `README.md` and `Project_Status.md`
-- GitHub Issues: https://github.com/yourusername/mediator-pro/issues
+- GitHub Issues: https://github.com/yourusername/MediatorPro/issues
 
 ---
 
